@@ -186,7 +186,11 @@
           <v-list-item dense style="font-size: 14px; font-family: Roboto, sans-serif" class="px-2">
             <v-list-item-content>
               <v-list-item-title style="font-weight: bold">
+<<<<<<< HEAD
+                {{ user.username }}
+=======
                 {{ username || $t('buttons.username') }}
+>>>>>>> ab985fa554c2bc130773a4edfb25c0cf3ee165ea
               </v-list-item-title>
               <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
             </v-list-item-content>

@@ -513,6 +513,28 @@
     "preForm": "Formulario Previo",
     "postForm": "Formulario Posterior"
   },
+<<<<<<< HEAD
+=======
+  "Createblank": {
+    "title": "¿Qué tipo de prueba estás buscando iniciar?",
+    "test": "Prueba",
+    "testType_1": {
+      "testTitle": "Heurística de Usabilidad",
+      "text": ["Porcentaje de Usabilidad", "Informe Final en PDF", "Invita a especialistas a evaluar tu aplicación"]
+    },
+    "testType_2": {
+      "testTitle": "Usuario de Usabilidad",
+      "text": ["Grabación de webcam, audio y pantalla", "Análisis mejorado de respuestas", "Pruebas moderadas o no moderadas"]
+    }
+  },
+  "TestDialog": {
+    "heading": "Creación de Prueba",
+    "sub-heading": "¡Añade un nombre a tu prueba!",
+    "test-name": "Nombre de la Prueba",
+    "test-description": "Descripción de la Prueba",
+    "test-label": "Prueba pública para todos los usuarios"
+  },
+>>>>>>> ab985fa554c2bc130773a4edfb25c0cf3ee165ea
   "help": {
     "createtest": "¿Cómo creo una prueba?",
     "createtestanswer": "Para crear una prueba, comienza haciendo clic en el ícono de más y selecciona Prueba Heurística. Luego, especifica los detalles de tu proyecto. Finalmente, dirígete a la página del administrador dedicada.",
