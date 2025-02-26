@@ -66,8 +66,8 @@
                   <a
                     style="color: #F9A826; text-decoration: underline;"
                     @click="redirectToSignin"
-                    >{{ $t('SIGNIN.alreadyHaveAnAccount') }}</a
-                  >
+                  >{{ $t('SIGNIN.alreadyHaveAnAccount') }}
+                  </a>
                 </p>
               </v-card-actions>
             </v-col>
@@ -101,17 +101,10 @@ export default {
       (v) => /.+@.+\..+/.test(v) || i18n.t('errors.invalidEmail'),
     ],
     passwordRules: [
-<<<<<<< HEAD
-      v => !!v || 'Password is required',
-      v => v.length >= 8 || 'Password must be at least 8 characters',
-      v => /[A-Z]/.test(v) || 'Must contain an uppercase letter',
-      v => /[!@#$%^&*(),.?":{}|<>]/.test(v) || 'Must contain a symbol'
-=======
       (v) => !!v || i18n.t('errors.passwordRequired'),
       (v) => v.length >= 8 || i18n.t('errors.passwordValidate'),
       (v) => /[A-Z]/.test(v) || i18n.t('errors.passwordUppercase'),
       (v) => /[!@#$%^&*(),.?":{}|<>]/.test(v) || i18n.t('errors.passwordSymbol'),
->>>>>>> 4ed306200ef75a73d51395ef466586df7c1f1c9c
     ],
     confirmpassword: '',
     showPassword: false,

@@ -186,7 +186,7 @@
           <v-list-item dense style="font-size: 14px; font-family: Roboto, sans-serif" class="px-2">
             <v-list-item-content>
               <v-list-item-title style="font-weight: bold">
-                {{ $t('buttons.username') }}
+                {{ user.username }}
               </v-list-item-title>
               <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
             </v-list-item-content>
