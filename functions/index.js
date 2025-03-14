@@ -1,6 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const nodemailer = require('nodemailer')
+//const { data } = require('cypress/types/jquery')
 require('dotenv').config()
 
 admin.initializeApp()
@@ -117,3 +118,4 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
 //     return err;
 //   }
 // });
+

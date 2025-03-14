@@ -118,6 +118,17 @@
           @change="change = true"
           @valForm="validate"
         />
+
+        <EditABTest
+          v-if="test.testType === 'ABTest'"
+          slot="content"
+          type="content"
+          :object="object"
+          :index="index"
+          @tabClicked="setIndex"
+          @change="change=true"
+        />
+
       </v-col>
     </v-row>
   </v-container>
@@ -130,6 +141,7 @@ import Snackbar from '@/components/atoms/Snackbar'
 import EditHeuristicsTest from '@/components/organisms/EditHeuristicsTest'
 import EditUserTest from '@/components/organisms/EditUserTest'
 import EditModeratedUserTest from '@/components/organisms/EditModeratedUserTest'
+import EditABTest from '@/components/organisms/EditABTest'
 
 export default {
   components: {
@@ -139,6 +151,7 @@ export default {
     EditHeuristicsTest,
     EditUserTest,
     EditModeratedUserTest,
+    EditABTest,
   },
 
   props: ['id'],

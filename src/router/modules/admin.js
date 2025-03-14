@@ -13,6 +13,9 @@ import CreateFromTemplate from '@/views/admin/CreateFromTemplateView.vue'
 import FinalReportView from '@/views/admin/FinalReportView'
 import Profile from '@/views/admin/ProfileView.vue'
 import Notification from '@/views/admin/NotificationPage.vue'
+//import { auth } from '@/firebase'
+//import { component } from 'vue/types/umd'
+import ABReportView from '@/views/admin/ABReportView.vue'
 
 export default [
   {
@@ -22,10 +25,10 @@ export default [
     component: TestList,
   },
   {
-    path:'/profile',
-    name:'Profile',
+    path: '/profile',
+    name: 'Profile',
     meta: { authorize: [1] },
-    component:Profile,
+    component: Profile,
   },
   {
     path: '/notifications',
@@ -46,6 +49,13 @@ export default [
         props: true,
         meta: { authorize: [0, 1] },
         component: ReportView,
+      },
+      {
+        path: '/abreportview/:id',
+        name: 'ABReportView',
+        props: true,
+        meta: { authorize: [0, 1] },
+        component: ABReportView
       },
       {
         path: '/finalreportview/:id',

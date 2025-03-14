@@ -4,6 +4,7 @@ import SignUp from '@/views/public/SignUpView.vue'
 import LandingPage from '@/views/public/LandingPageView.vue'
 import PageNotFound from '@/views/public/PageNotFoundView.vue'
 import Help from '@/views/public/Help.vue'
+import TrackerBase from '@/views/public/TrackerBase.vue'
 
 export default [
   {
@@ -30,6 +31,12 @@ export default [
     name: 'Help',
     meta: { authorize: [] },
     component: Help,
+  },
+  {
+    path: '/TrackerBase',
+    name: 'Track',
+    meta: { authorize: [] },
+    component: TrackerBase,
   },
   {
     path: '/',

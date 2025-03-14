@@ -181,6 +181,7 @@ export default {
     handleTestType() {
       if (this.testType === 'User') return this.userDialog = true
       if (this.testType === 'HEURISTICS') return this.submit()
+      if (this.testType === 'ABTest') return this.submit()
     },
 
     async submit() {

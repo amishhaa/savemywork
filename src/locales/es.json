@@ -513,8 +513,6 @@
     "preForm": "Formulario Previo",
     "postForm": "Formulario Posterior"
   },
-<<<<<<< HEAD
-=======
   "Createblank": {
     "title": "¿Qué tipo de prueba estás buscando iniciar?",
     "test": "Prueba",
@@ -534,7 +532,6 @@
     "test-description": "Descripción de la Prueba",
     "test-label": "Prueba pública para todos los usuarios"
   },
->>>>>>> ab985fa554c2bc130773a4edfb25c0cf3ee165ea
   "help": {
     "createtest": "¿Cómo creo una prueba?",
     "createtestanswer": "Para crear una prueba, comienza haciendo clic en el ícono de más y selecciona Prueba Heurística. Luego, especifica los detalles de tu proyecto. Finalmente, dirígete a la página del administrador dedicada.",

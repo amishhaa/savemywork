@@ -1,5 +1,7 @@
 <template>
   <div>
+    <ABReportView v-if="test.testType === 'ABTest'"/>
+    <div v-else>
     <Snackbar />
 
     <!-- Delete Alert Dialog -->
@@ -90,11 +92,13 @@
       </div>
     </ShowInfo>
   </div>
+  </div>
 </template>
 
 <script>
 import ShowInfo from '@/components/organisms/ShowInfo'
 import Intro from '@/components/molecules/IntroReports'
+import ABReportView from '@/views/admin/ABReportView.vue'
 import Snackbar from '@/components/atoms/Snackbar'
 import { doc, getDoc, updateDoc, deleteField } from 'firebase/firestore'
 import { db } from '@/firebase'
@@ -104,6 +108,7 @@ export default {
     ShowInfo,
     Intro,
     Snackbar,
+    ABReportView,
   },
 
   props: { id: { type: String, default: '' } },
@@ -209,6 +214,11 @@ export default {
     reports() {
       if (Object.values(this.reports)) this.loading = false
     },
+    'test.testType': function (newType) {
+      if (newType === 'ABTest') {
+        this.redirectAB();
+      }
+    },
   },
 
   async created() {
@@ -216,6 +226,9 @@ export default {
   },
 
   methods: {
+    redirectAB() {
+      this.$router.push({ name: 'ABReportView' })  // Redirects to ABReports.vue
+    },
     checkIfIsSubmitted(status) {
       return status
         ? this.$t('HeuristicsReport.status.submitted')

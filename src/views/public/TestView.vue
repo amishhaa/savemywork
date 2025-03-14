@@ -478,7 +478,10 @@
       <UserTestView />
     </div>
     <div v-if="test.testType === 'User' && test.userTestType === 'moderated'">
-      <ModeratedTestView ref="ModeratedTestView" :token="token" />
+      <ModeratedTestView ref="ModeratedTestView.vue" :token="token" />
+    </div>
+    <div v-if="test.testType === 'ABTest'">
+      <ABTestView ref="ABTestView.vue" :token="token" />
     </div>
   </div>
 </template>
@@ -493,6 +496,8 @@ import HeuristicQuestionAnswer from '@/models/HeuristicQuestionAnswer'
 import Heuristic from '@/models/Heuristic'
 import UserTestView from './UserTestView.vue'
 import ModeratedTestView from './ModeratedTestView.vue'
+import ABTestView from './ABTestView.vue'
+
 export default {
   components: {
     ShowInfo,
@@ -502,6 +507,7 @@ export default {
     Snackbar,
     UserTestView,
     ModeratedTestView,
+    ABTestView,
   },
   props: {
     id: { type: String, default: '' },

@@ -10,7 +10,7 @@
 
     <v-col cols="12" class="mt-6">
       <v-row>
-        <v-col cols="10" md="5" sm="10" class="card">
+        <v-col cols="10" md="5" sm="10" class="card mb-15">
           <CardTypeTest
             :img="require('../../../public/specialist.png')"
             :title="$t('Createblank.testType_1.testTitle')"
@@ -21,13 +21,24 @@
           />
         </v-col>
 
-        <v-col cols="12" md="5" sm="10" class="card">
+        <v-col cols="12" md="5" sm="10" class="card mb-15">
           <CardTypeTest
             :img="require('../../../public/user.png')"
             :title="$t('Createblank.testType_2.testTitle')"
             :type="$t('Createblank.test')"
             segund-type="User"
             :texts="$t('Createblank.testType_2.text')"
+            @click="setTestType"
+          />
+        </v-col>
+        
+        <v-col cols="12" md="5" sm="10" class="card mb-15">
+          <CardTypeTest
+            :img="require('../../../public/user.png')"
+            :title="$t('Createblank.testType_3.testTitle')"
+            :type="$t('Createblank.test')"
+            segund-type="ABTest"
+            :texts="$t('Createblank.testType_3.text')"
             @click="setTestType"
           />
         </v-col>
@@ -73,7 +84,7 @@ export default {
 
 <style scoped>
 .outermost {
-  height: 93vh;
+  min-height: 93vh;
   background-color: #f9f5f0;
 }
 

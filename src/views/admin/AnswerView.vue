@@ -4,6 +4,9 @@
     <div v-if="testAnswerDocument.type === 'HEURISTICS'">
       <HeuristicsTestAnswer />
     </div>
+    <div v-if="testAnswerDocument.type === 'ABTest'">
+      <ABTestAnswer />
+    </div>
     <div v-else>
       <UserTestAnswer />
     </div>
@@ -13,10 +16,13 @@
 <script>
 import HeuristicsTestAnswer from '@/components/organisms/HeuristicsTestAnswer.vue'
 import UserTestAnswer from '@/components/organisms/UserTestAnswer.vue'
+import ABTestAnswer from '@/components/organisms/ABTestAnswer.vue'
+
 export default {
   components: {
     HeuristicsTestAnswer,
     UserTestAnswer,
+    ABTestAnswer,
   },
 
   computed: {

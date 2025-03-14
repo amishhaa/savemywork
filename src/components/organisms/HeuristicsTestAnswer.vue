@@ -782,13 +782,13 @@ export default {
         const resposta = await axios.post(
           process.env.VUE_APP_FIREBASE_PYTHON_FUNCTION,
           {
-            caminhoTestStructure: caminhoTestStructure,
-            caminhoTestWeights: caminhoTestWeights,
-            caminhoTestScore: caminhoTestScore,
+            caminhoTestStructure: [{"title": "Example Heuristic"}],
+            caminhoTestWeights: {"Example": [1, 3, 5]},
+            caminhoTestScore: [85.0],
           },
         )
         const data = resposta.data
-
+        console.log("functions found")
         this.decisionmatrix = data.decisionmatrix
         this.tabelacompleta = data.tabelacompleta
         this.relative = data.relative

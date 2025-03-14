@@ -512,8 +512,6 @@
     "preForm": "Pré-Formulário",
     "postForm": "Pós-Formulário"
   },
-<<<<<<< HEAD
-=======
   "Createblank": {
     "title": "Que tipo de teste você está procurando iniciar?",
     "test": "Teste",
@@ -533,7 +531,6 @@
     "test-description": "Descrição do Teste",
     "test-label": "Teste público para todos os usuários"
   },
->>>>>>> ab985fa554c2bc130773a4edfb25c0cf3ee165ea
   "help": {
     "createtest": "Como criar um teste?",
     "createtestanswer": "Para criar um teste, clique no ícone de mais e selecione Teste Heurístico. Em seguida, especifique os detalhes do seu projeto. Por fim, acesse a página do gerenciador dedicada.",

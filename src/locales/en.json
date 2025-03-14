@@ -515,8 +515,6 @@
     "preForm": "Pre Form",
     "postForm": "Post Form"
   },
-<<<<<<< HEAD
-=======
   "Createblank": {
     "title": "What kind of test are you looking to start?",
     "test": "Test",
@@ -527,6 +525,10 @@
     "testType_2": {
       "testTitle": "Usability User",
       "text": ["Webcam, audio & screen record", "Enhanced answer analysis", "Moderated or non moderated tests"]
+    },
+    "testType_3": {
+      "testTitle": "A/B Testing",
+      "text": ["A/B testing", "Real time user interaction report generation", "Detailed reports"]
     }
   },
   "TestDialog": {
@@ -536,7 +538,6 @@
     "test-description": "Test Description",
     "test-label": "Test public to all users"
   },
->>>>>>> ab985fa554c2bc130773a4edfb25c0cf3ee165ea
   "help": {
     "createtest": "How do I create a test?",
     "createtestanswer": "To create a test, begin by clicking on the plus icon, selecting Heuristic Test. Then, specify the particulars of your project. Finally, proceed to the dedicated manager page.",
