@@ -9,55 +9,56 @@ import Cooperators from '@/store/modules/Cooperators'
 import Reports from '@/store/modules/Reports'
 import Heuristic from '@/store/modules/Heuristic'
 import Answer from '@/store/modules/Answer'
-
+import Tracker from '@/store/modules/Tracker'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-    state:{
-        loading:false,
-        error:null,
-        dialogLeave:false,
-        localChanges:false,
-        pathTo:null,
+  state: {
+    loading: false,
+    error: null,
+    dialogLeave: false,
+    localChanges: false,
+    pathTo: null,
+  },
+  mutations: {
+    setLoading(state, payload) {
+      state.loading = payload
     },
-    mutations: {
-        setLoading(state, payload) {
-          state.loading = payload
-        },
-        setError(state, payload) {
-          state.error = {
-            errorCode: payload.errorCode,
-             message: payload.message,
-            }
-        },
-        SET_DIALOG_LEAVE(state,payload){
-          state.dialogLeave = payload
-        },
-        SET_LOCAL_CHANGES(state,payload){
-          state.localChanges = payload
-        },
-        SET_PATH_TO(state,payload){
-          state.pathTo = payload
-        },
+    setError(state, payload) {
+      state.error = {
+        errorCode: payload.errorCode,
+        message: payload.message,
+      }
     },
-    getters:{
-      getDialogLeaveStatus(state){
-        return state.dialogLeave
-      },
-      localChanges(state){
-        return state.localChanges
-      },
+    SET_DIALOG_LEAVE(state, payload) {
+      state.dialogLeave = payload
     },
-    modules: {
-      Auth,
-      Templates,
-      Tests,
-      Users,
-      Database,
-      Cooperators,
-      Reports,
-      Heuristic,
-      Answer,
+    SET_LOCAL_CHANGES(state, payload) {
+      state.localChanges = payload
     },
+    SET_PATH_TO(state, payload) {
+      state.pathTo = payload
+    },
+  },
+  getters: {
+    getDialogLeaveStatus(state) {
+      return state.dialogLeave
+    },
+    localChanges(state) {
+      return state.localChanges
+    },
+  },
+  modules: {
+    Auth,
+    Templates,
+    Tests,
+    Users,
+    Database,
+    Cooperators,
+    Reports,
+    Heuristic,
+    Answer,
+    Tracker,
+  },
 })

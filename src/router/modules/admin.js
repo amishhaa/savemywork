@@ -16,6 +16,7 @@ import Notification from '@/views/admin/NotificationPage.vue'
 //import { auth } from '@/firebase'
 //import { component } from 'vue/types/umd'
 import ABReportView from '@/views/admin/ABReportView.vue'
+import TrackerBase from '@/views/admin/TrackerBase.vue'
 
 export default [
   {
@@ -35,6 +36,12 @@ export default [
     name: 'notifications',
     meta: { authorize: [1] },
     component: Notification,
+  },
+  {
+    path: '/trackerbase',
+    name: TrackerBase,
+    meta: { authorize: [0, 1] },
+    component: TrackerBase,
   },
   {
     path: '/managerview/:id/:token?',
