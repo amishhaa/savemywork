@@ -1,75 +1,175 @@
 <template>
   <div>
     <h2>Received Events</h2>
-    <ul>
-      <li v-for="(event, index) in events" :key="index">
-        <strong>{{ event.type }}</strong>: {{ event.details }}
-      </li>
-    </ul>
+    <div class="container">
+      <ul>
+        <li v-for="(event, index) in recentEvents" :key="index">
+          <strong>{{ event.type }}</strong>: {{ event.details }}
+          <span class="timestamp">{{ event.timestamp }}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import Tracker from "@/models/Tracker";
+
 export default {
   data() {
     return {
-      events: [], // Local state to store events
+      recentEvents: [] 
     };
   },
 
   mounted() {
-    this.fetchEvents();
     window.addEventListener("message", this.handleMessage);
   },
 
   beforeUnmount() {
     window.removeEventListener("message", this.handleMessage);
   },
-
+  computed: {
+    currentUserTestAnswer() {
+        return this.$store.getters.currentUserTestAnswer
+    },
+  },
   methods: {
-    /**
-     * Fetches events from the store and updates the local state.
-     */
-    async fetchEvents() {
+    formatEventDetails(eventType, details) {
       try {
-        // Access the state directly from the store
-        this.events = store.state.Tracker.events;
-      } catch (error) {
-        console.error("Error fetching events:", error);
+        const parsedDetails = typeof details === 'string' ? JSON.parse(details) : details;
+        
+        switch(eventType) {
+          case 'mousemove':
+            return {
+              x: parsedDetails.x,
+              y: parsedDetails.y
+            };
+          case 'click':
+            return {
+              x: parsedDetails.x,
+              y: parsedDetails.y,
+              buttonType: parsedDetails.buttonType || 'left'
+            };
+          case 'scroll':
+            return {
+              deltaX: parsedDetails.deltaX || 0,
+              deltaY: parsedDetails.deltaY || 0
+            };
+          case 'button-press':
+            return {
+              buttonId: parsedDetails.buttonId,
+              actionType: parsedDetails.actionType || 'click'
+            };
+          case 'key-press':
+            return {
+              key: parsedDetails.key,
+              actionType: parsedDetails.actionType || 'keydown'
+            };
+          case 'focus-change':
+            return {
+              elementId: parsedDetails.elementId,
+              actionType: parsedDetails.actionType || 'focus'
+            };
+          case 'touch':
+            return {
+              x: parsedDetails.x,
+              y: parsedDetails.y,
+              type: parsedDetails.type || 'touchstart'
+            };
+          default:
+            return parsedDetails;
+        }
+      } catch (e) {
+        return details;
       }
     },
 
-    /**
-     * Handles incoming messages (events) and processes them.
-     * @param {MessageEvent} event - The message event containing event data.
-     */
     async handleMessage(event) {
       try {
         const eventData = JSON.parse(event.data);
-        const tracker = new Tracker({
-          eventType: eventData.type,
-          eventId: eventData.id,
-          timestamp: Date.now(),
-          userId: eventData.userId,
-          metadata: eventData.details,
+        const timestamp = new Date().toISOString();
+        
+        // Add to recent events for display
+        this.recentEvents.unshift({
+          type: eventData.type,
+          details: typeof eventData.details === 'object' ? 
+                  JSON.stringify(eventData.details) : eventData.details,
+          timestamp
         });
-        await this.$store.dispatch("addTracker", tracker);
+        if (this.recentEvents.length > 100) this.recentEvents.pop();
 
-        //this.events = store.state.Tracker.events;
+        // Format data to match Interactions class structure
+        const formattedEvent = this.formatEventDetails(eventData.type, eventData.details);
+        
+        const testAnswerData = {
+          userDocId: eventData.userId,
+          events: {
+            [this.getEventCategory(eventData.type)]: [formattedEvent]
+          },
+          createdAt: new Date()
+        };
 
-        console.log("Event processed and saved:", tracker);
+        this.currentUserTestAnswer.userDocId = eventData.userDocId
+        this.currentUserTestAnswer.events = {
+            [this.getEventCategory(eventData.type)]: [formattedEvent]
+          }
+        this.currentUserTestAnswer.createdAt = new Date()
+        console.log("succesful")
+
       } catch (error) {
         console.error("Error processing event:", error);
+        this.recentEvents.unshift({
+          type: 'error',
+          details: `Failed to record event: ${error.message}`,
+          timestamp: new Date().toISOString()
+        });
       }
     },
-  },
+
+    getEventCategory(type) {
+      switch(type) {
+        case 'mousemove': return 'mouseMovements';
+        case 'click': return 'mouseClicks';
+        case 'scroll': return 'scrollEvents';
+        case 'button-press': return 'buttonPresses';
+        case 'key-press': return 'keyboardEvents';
+        case 'focus-change': return 'focusEvents';
+        case 'touch': return 'touchEvents';
+        default: return 'otherEvents';
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
-img {
-  border: 1px solid #ccc;
+.container {
+  display: flex;
+  gap: 20px;
+}
+
+ul {
+  flex: 1;
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  padding: 10px;
+  list-style-type: none;
+}
+
+li {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+}
+
+.timestamp {
+  color: #666;
+  font-size: 0.8em;
+}
+
+li strong {
+  color: #2c3e50;
 }
 </style>
-

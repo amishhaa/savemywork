@@ -1,146 +1,109 @@
-/**
- * Represents the event tracker model.
- */
 export default class Tracker {
     /**
-     * @param {Partial<Tracker>} partial
+     * @param {{
+     *   id?: string,
+     *   userId: string,
+     *   mouseMovements?: Array<{x: number, y: number}>,
+     *   mouseClicks?: Array<{x: number, y: number, buttonType: string}>,
+     *   scrollEvents?: Array<{deltaX: number, deltaY: number}>,
+     *   buttonPresses?: Array<{buttonId: string, actionType: string}>,
+     *   keyboardEvents?: Array<{key: string, actionType: string}>
+     * }} params
      */
     constructor({
-        id,
-        eventType,
-        eventId,
-        timestamp,
+        id = null,
         userId,
-        clicks,
-        metadata,
-        mouseClicks,
-        scrollEvents,
-        mousePositions
+        mouseMovements = [],
+        mouseClicks = [],
+        scrollEvents = [],
+        buttonPresses = [],
+        keyboardEvents = []
     } = {}) {
-        /**
-         * Defines the tracker ID.
-         * @type {string}
-         */
-        this.id = id ?? null;
-
-        /**
-         * Defines the type of event.
-         * @type {string}
-         */
-        this.eventType = eventType ?? null;
-
-        /**
-         * Defines the event ID.
-         * @type {string}
-         */
-        this.eventId = eventId ?? null;
-
-        /**
-         * Defines the event timestamp.
-         * @type {number}
-         */
-        this.timestamp = timestamp ?? Date.now();
-
-        /**
-         * Defines the user ID associated with the event.
-         * @type {string}
-         */
-        this.userId = userId ?? null;
-
-        /**
-         * Defines the number of clicks recorded for this event.
-         * @type {number}
-         */
-        this.clicks = clicks ?? 0;
-
-        /**
-         * Defines additional metadata related to the event.
-         * @type {Object}
-         */
-        this.metadata = metadata ?? {};
-
-        /**
-         * Stores details of mouse clicks including X and Y coordinates.
-         * @type {Array<{x: number, y: number, timestamp: number}>}
-         */
-        this.mouseClicks = mouseClicks ?? [];
-
-        /**
-         * Stores details of scroll events.
-         * @type {Array<{deltaY: number, timestamp: number}>}
-         */
-        this.scrollEvents = scrollEvents ?? [];
-
-        /**
-         * Stores details of mouse positions and durations.
-         * @type {Array<{x: number, y: number, startTime: number, endTime: number}>}
-         */
-        this.mousePositions = mousePositions ?? [];
-    }
-
-    /**
-     * Creates a new Tracker model from a given map.
-     * @param {Partial<Tracker>} map The map to be converted.
-     * @returns {Tracker} A new Tracker instance.
-     */
-    static toTracker(map) {
-        return new Tracker({
-            ...map,
-        });
-    }
-
-    /**
-     * Converts the current Tracker model into a Firestore-compatible format.
-     * @returns {Object} A map representing the current tracker instance.
-     */
-    toFirestore() {
-        return {
-            eventType: this.eventType,
-            eventId: this.eventId,
-            timestamp: this.timestamp,
-            userId: this.userId,
-            clicks: this.clicks,
-            metadata: this.metadata,
-            mouseClicks: this.mouseClicks,
-            scrollEvents: this.scrollEvents,
-            mousePositions: this.mousePositions
+        this.id = id;
+        this.userId = userId;
+        this.interactions = {
+            mouseMovements,
+            mouseClicks,
+            scrollEvents,
+            buttonPresses,
+            keyboardEvents
         };
     }
 
     /**
-     * Records a mouse click with X and Y coordinates.
-     * @param {number} x The X coordinate of the click.
-     * @param {number} y The Y coordinate of the click.
+     * Creates Tracker from Firestore data
+     * @param {firestore.DocumentSnapshot} doc
+     * @returns {Tracker}
      */
-    recordMouseClick(x, y) {
-        this.mouseClicks.push({ x, y, timestamp: Date.now() });
-        this.incrementClicks();
+    static fromFirestore(doc) {
+        const data = doc.data();
+        return new Tracker({
+            id: doc.id,
+            userId: data.userId,
+            mouseMovements: data.interactions?.mouseMovements || [],
+            mouseClicks: data.interactions?.mouseClicks || [],
+            scrollEvents: data.interactions?.scrollEvents || [],
+            buttonPresses: data.interactions?.buttonPresses || [],
+            keyboardEvents: data.interactions?.keyboardEvents || []
+        });
     }
 
     /**
-     * Records a scroll event.
-     * @param {number} deltaY The amount scrolled vertically.
+     * Converts to Firestore format
+     * @returns {Object}
      */
-    recordScrollEvent(deltaY) {
-        this.scrollEvents.push({ deltaY, timestamp: Date.now() });
+    toFirestore() {
+        return {
+            userId: this.userId,
+            interactions: this.interactions
+        };
+    }
+
+    // === Interaction Recording Methods === //
+
+    /**
+     * Records mouse position
+     * @param {number} x
+     * @param {number} y
+     */
+    recordMouseMovement(x, y) {
+        this.interactions.mouseMovements.push({ x, y });
     }
 
     /**
-     * Records the duration the mouse was at a certain position.
-     * @param {number} x The X coordinate.
-     * @param {number} y The Y coordinate.
-     * @param {number} duration The duration in milliseconds.
+     * Records mouse click
+     * @param {number} x
+     * @param {number} y
+     * @param {string} [buttonType='left']
      */
-    recordMousePositionDuration(x, y, duration) {
-        const endTime = Date.now();
-        const startTime = endTime - duration;
-        this.mousePositions.push({ x, y, startTime, endTime });
+    recordMouseClick(x, y, buttonType = 'left') {
+        this.interactions.mouseClicks.push({ x, y, buttonType });
     }
 
     /**
-     * Increments the click count for the event.
+     * Records scroll event
+     * @param {number} deltaX
+     * @param {number} deltaY
      */
-    incrementClicks() {
-        this.clicks += 1;
+    recordScroll(deltaX, deltaY) {
+        this.interactions.scrollEvents.push({ deltaX, deltaY });
+    }
+
+    /**
+     * Records button press
+     * @param {string} buttonId
+     * @param {string} [actionType='click']
+     */
+    recordButtonPress(buttonId, actionType = 'click') {
+        this.interactions.buttonPresses.push({ buttonId, actionType });
+    }
+
+    /**
+     * Records keyboard event
+     * @param {string} key
+     * @param {string} [actionType='keydown']
+     */
+    recordKeyPress(key, actionType = 'keydown') {
+        this.interactions.keyboardEvents.push({ key, actionType });
     }
 }

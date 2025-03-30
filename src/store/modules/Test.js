@@ -31,6 +31,10 @@ export default {
     localCameraStream: null,
     peerConnection: null,
     isDisconnected: false,
+    abTestLinks: {
+      linkA: '',
+      linkB: ''
+    },
   },
   getters: {
     tests(state) {
@@ -81,8 +85,25 @@ export default {
     isDisconnected(state) {
       return state.isDisconnected
     },
+    linkA: (state) => state.abTestLinks.linkA,
+    linkB: (state) => state.abTestLinks.linkB,
   },
   mutations: {
+    SET_LINK_A(state, payload) {
+      state.abTestLinks.linkA = payload
+    },
+    SET_LINK_B(state, payload) {
+      state.abTestLinks.linkB = payload
+    },
+    RESET_AB_TEST_LINKS(state) {
+      state.abTestLinks = {
+        linkA: '',
+        linkB: ''
+      }
+    },
+    SET_AB_TEST_LINKS(state, payload) {
+      state.abTestLinks = payload
+    },
     SET_TEST(state, payload) {
       state.Test = payload
     },
@@ -181,6 +202,15 @@ export default {
     },
   },
   actions: {
+    async saveAbTestLinks({ commit }, { linkA, linkB }) {
+      try {
+        commit('SET_AB_TEST_LINKS', { linkA, linkB })
+        return true
+      } catch (error) {
+        console.error('Error saving AB test links:', error)
+        throw error
+      }
+    },
     async createNewTest({ commit }, payload) {
       commit('setLoading', true)
 

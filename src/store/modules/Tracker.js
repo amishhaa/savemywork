@@ -1,5 +1,5 @@
 /**
- * Template Store Module
+ * Tracker Store Module
  * @module Tracker
  */
 import Tracker from "@/models/Tracker";
@@ -8,7 +8,7 @@ import { collection, addDoc, doc, updateDoc, deleteDoc, getDocs, query, where } 
 
 export default {
     state: {
-        trackers: [], // Local state to store trackers
+        trackers: [],
     },
 
     mutations: {
@@ -16,115 +16,158 @@ export default {
             state.trackers.push(tracker);
         },
         UPDATE_TRACKER(state, updatedTracker) {
-            const index = state.trackers.findIndex((t) => t.id === updatedTracker.id);
+            const index = state.trackers.findIndex(t => t.id === updatedTracker.id);
             if (index !== -1) {
-                state.trackers[index] = new Tracker(updatedTracker);
+                state.trackers.splice(index, 1, updatedTracker);
             }
         },
         DELETE_TRACKER(state, trackerId) {
-            state.trackers = state.trackers.filter((t) => t.id !== trackerId);
-        },
-        INCREMENT_CLICKS(state, trackerId) {
-            const tracker = state.trackers.find((t) => t.id === trackerId);
-            if (tracker) tracker.incrementClicks();
+            state.trackers = state.trackers.filter(t => t.id !== trackerId);
         },
         SET_TRACKERS(state, trackers) {
             state.trackers = trackers;
         },
+        // Interaction-specific mutations
+        ADD_MOUSE_MOVEMENT(state, { trackerId, x, y }) {
+            const tracker = state.trackers.find(t => t.id === trackerId);
+            if (tracker) tracker.recordMouseMovement(x, y);
+        },
+        ADD_MOUSE_CLICK(state, { trackerId, x, y, buttonType }) {
+            const tracker = state.trackers.find(t => t.id === trackerId);
+            if (tracker) tracker.recordMouseClick(x, y, buttonType);
+        },
+        ADD_SCROLL_EVENT(state, { trackerId, deltaX, deltaY }) {
+            const tracker = state.trackers.find(t => t.id === trackerId);
+            if (tracker) tracker.recordScroll(deltaX, deltaY);
+        },
+        ADD_BUTTON_PRESS(state, { trackerId, buttonId, actionType }) {
+            const tracker = state.trackers.find(t => t.id === trackerId);
+            if (tracker) tracker.recordButtonPress(buttonId, actionType);
+        },
+        ADD_KEY_PRESS(state, { trackerId, key, actionType }) {
+            const tracker = state.trackers.find(t => t.id === trackerId);
+            if (tracker) tracker.recordKeyPress(key, actionType);
+        }
     },
 
     actions: {
         async fetchTrackers({ commit }) {
             try {
-                const querySnapshot = await getDocs(collection(db, "events"));
-                const trackers = querySnapshot.docs.map((doc) => {
-                    const data = doc.data();
-                    return new Tracker({ id: doc.id, ...data });
-                });
+                const querySnapshot = await getDocs(collection(db, "trackers"));
+                const trackers = querySnapshot.docs.map(doc =>
+                    Tracker.fromFirestore({ id: doc.id, ...doc.data() })
+                );
                 commit("SET_TRACKERS", trackers);
-                console.log("Trackers fetched from Firestore");
             } catch (error) {
                 console.error("Error fetching trackers:", error);
             }
         },
 
-        async addTracker({ commit }, trackerData) {
-            const tracker = new Tracker(trackerData);
-
+        async fetchUserTracker({ commit, state }, userId) {
             try {
-                const docRef = await addDoc(collection(db, "events"), tracker.toFirestore());
-                tracker.id = docRef.id; // Assign Firestore ID
-                commit("ADD_TRACKER", tracker);
-                console.log("Event saved to Firestore:", docRef.id);
-            } catch (error) {
-                console.error("Error adding event to Firestore:", error);
-            }
-        },
+                // Check if we already have it locally
+                const existing = state.trackers.find(t => t.userId === userId);
+                if (existing) return existing;
 
-        async updateTracker({ commit }, updatedTracker) {
-            try {
-                const trackerRef = doc(db, "events", updatedTracker.id);
-                await updateDoc(trackerRef, updatedTracker.toFirestore());
-                commit("UPDATE_TRACKER", updatedTracker);
-                console.log("Event updated in Firestore");
-            } catch (error) {
-                console.error("Error updating event:", error);
-            }
-        },
+                // Fetch from Firestore
+                const q = query(collection(db, "trackers"), where("userId", "==", userId));
+                const querySnapshot = await getDocs(q);
 
-        async deleteTracker({ commit }, trackerId) {
-            try {
-                await deleteDoc(doc(db, "events", trackerId));
-                commit("DELETE_TRACKER", trackerId);
-                console.log("Event deleted from Firestore");
-            } catch (error) {
-                console.error("Error deleting event:", error);
-            }
-        },
-
-        async incrementClicks({ commit, state }, trackerId) {
-            const tracker = state.trackers.find((t) => t.id === trackerId);
-            if (tracker) {
-                tracker.incrementClicks();
-
-                try {
-                    const trackerRef = doc(db, "events", trackerId);
-                    await updateDoc(trackerRef, { clicks: tracker.clicks });
-                    commit("INCREMENT_CLICKS", trackerId);
-                    console.log("Click count updated in Firestore");
-                } catch (error) {
-                    console.error("Error updating click count:", error);
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    const tracker = Tracker.fromFirestore({ id: doc.id, ...doc.data() });
+                    commit("ADD_TRACKER", tracker);
+                    return tracker;
                 }
+
+                // Create new if doesn't exist
+                return await this.dispatch("createTracker", userId);
+            } catch (error) {
+                console.error("Error fetching user tracker:", error);
             }
         },
+
+        async createTracker({ commit }, userId) {
+            const tracker = new Tracker({ userId });
+            try {
+                const docRef = await addDoc(collection(db, "trackers"), tracker.toFirestore());
+                tracker.id = docRef.id;
+                commit("ADD_TRACKER", tracker);
+                return tracker;
+            } catch (error) {
+                console.error("Error creating tracker:", error);
+            }
+        },
+
+        async updateTracker({ commit }, tracker) {
+            try {
+                await updateDoc(doc(db, "trackers", tracker.id), tracker.toFirestore());
+                commit("UPDATE_TRACKER", tracker);
+            } catch (error) {
+                console.error("Error updating tracker:", error);
+            }
+        },
+
+        async recordInteraction({ commit, dispatch }, { userId, type, data }) {
+            try {
+                // Get or create user's tracker
+                const tracker = await dispatch("fetchUserTracker", userId);
+                if (!tracker) return;
+
+                // Record the interaction
+                switch (type) {
+                    case "mouseMovement":
+                        commit("ADD_MOUSE_MOVEMENT", { trackerId: tracker.id, ...data });
+                        break;
+                    case "mouseClick":
+                        commit("ADD_MOUSE_CLICK", { trackerId: tracker.id, ...data });
+                        break;
+                    case "scroll":
+                        commit("ADD_SCROLL_EVENT", { trackerId: tracker.id, ...data });
+                        break;
+                    case "buttonPress":
+                        commit("ADD_BUTTON_PRESS", { trackerId: tracker.id, ...data });
+                        break;
+                    case "keyPress":
+                        commit("ADD_KEY_PRESS", { trackerId: tracker.id, ...data });
+                        break;
+                }
+
+                // Batch updates could be implemented here for performance
+                await dispatch("updateTracker", tracker);
+            } catch (error) {
+                console.error("Error recording interaction:", error);
+            }
+        }
     },
 
     getters: {
-        getTrackerById: (state) => (id) => state.trackers.find((t) => t.id === id),
+        getUserTracker: (state) => (userId) =>
+            state.trackers.find(t => t.userId === userId),
 
-        getTrackersByUser: (state) => (userId) =>
-            state.trackers.filter((t) => t.userId === userId),
-
-        getTrackersByEventType: (state) => (eventType) =>
-            state.trackers.filter((t) => t.eventType === eventType),
-
-        getTotalClicksByEventType: (state) => (eventType) => {
-            const trackers = state.trackers.filter((t) => t.eventType === eventType);
-            return trackers.reduce((total, tracker) => total + tracker.clicks, 0);
+        getMouseMovements: (state) => (userId) => {
+            const tracker = state.trackers.find(t => t.userId === userId);
+            return tracker?.interactions.mouseMovements || [];
         },
 
-        getEventTypeSummary: (state) => {
-            const eventTypeMap = {};
-            state.trackers.forEach((tracker) => {
-                if (!eventTypeMap[tracker.eventType]) {
-                    eventTypeMap[tracker.eventType] = 0;
-                }
-                eventTypeMap[tracker.eventType] += tracker.clicks;
-            });
-            return Object.entries(eventTypeMap).map(([eventType, clicks]) => ({
-                eventType,
-                clicks,
-            }));
+        getMouseClicks: (state) => (userId) => {
+            const tracker = state.trackers.find(t => t.userId === userId);
+            return tracker?.interactions.mouseClicks || [];
         },
-    },
+
+        getScrollEvents: (state) => (userId) => {
+            const tracker = state.trackers.find(t => t.userId === userId);
+            return tracker?.interactions.scrollEvents || [];
+        },
+
+        getHeatmapData: (state) => (userId) => {
+            const tracker = state.trackers.find(t => t.userId === userId);
+            if (!tracker) return [];
+
+            return [
+                ...tracker.interactions.mouseMovements.map(m => ({ x: m.x, y: m.y, value: 1 })),
+                ...tracker.interactions.mouseClicks.map(m => ({ x: m.x, y: m.y, value: 5 }))
+            ];
+        }
+    }
 };

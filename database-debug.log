@@ -3,6 +3,7 @@ WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (fil
 WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
 WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
 WARNING: All illegal access operations will be denied in a future release
-07:25:21.360 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-07:25:21.622 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
-11:17:07.274 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - ruxailab-11c53 successfully activated FBKV (SurveyIdle(0)) wait: 1156ms, init: 0ms
+16:46:45.607 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+16:46:45.894 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+17:04:57.132 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+17:04:57.276 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.

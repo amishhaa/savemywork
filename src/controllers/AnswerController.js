@@ -61,8 +61,12 @@ export default class AnswerController extends Controller {
       fieldToUpdate[
         `heuristicAnswers.${payload.userDocId}`
       ] = payload.toFirestore()
-    } else if (testType === 'User') {
+    }
+    else if (testType === 'User') {
       fieldToUpdate[`taskAnswers.${payload.userDocId}`] = payload.toFirestore()
+    }
+    else if (testType === 'ABTest') {
+      fieldToUpdate[`interactions.${payload.userDocId}`] = payload.toFirestore()
     }
     await super.update(COLLECTION, answerDocId, fieldToUpdate)
   }

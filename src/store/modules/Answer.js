@@ -1,6 +1,7 @@
 import AnswerController from '@/controllers/AnswerController'
 import HeuristicAnswer from '@/models/HeuristicAnswer'
 import TaskAnswer from '@/models/TaskAnswer'
+import Interactions from '@/models/Interactions'
 import UserTask from '@/models/UserTask'
 import { percentage } from '@/utils/statistics'
 
@@ -47,6 +48,16 @@ export default {
             rootState.test.testOptions,
           )
           : new HeuristicAnswer({
+            userDocId: rootState.user.id,
+          })
+      }
+
+      if (state.testAnswerDocument.type === 'ABTest') {
+        return state.testAnswerDocument.interactions[`${rootState.user.id}`]
+          ? Interactions.toInteractions(
+            state.testAnswerDocument.interactions[`${rootState.user.id}`],
+          )
+          : new Interactions({
             userDocId: rootState.user.id,
           })
       }

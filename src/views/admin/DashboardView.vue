@@ -227,7 +227,6 @@
 import Snackbar from '@/components/atoms/Snackbar'
 import List from '@/components/atoms/ListComponent'
 import TempDialog from '@/components/molecules/TemplateInfoDialog'
-
 export default {
   components: {
     Snackbar,
@@ -433,7 +432,6 @@ export default {
   },
 }
 </script>
-
 <style scoped>
 .titleText {
   font-size: 40px;
